@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import AuthPage from './components/AuthPage';
+import LandingPage from './pages/LandingPage';
 import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);
+  const [showAuth, setShowAuth] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Check if user is already logged in (has token)
@@ -95,7 +97,11 @@ function App() {
         </div>
       ) : (
         /* Register/Login screen */
-        <AuthPage onAuthSuccess={handleAuthSuccess} />
+       showAuth ? (
+  <AuthPage onAuthSuccess={handleAuthSuccess} />
+) : (
+  <LandingPage onLoginClick={() => setShowAuth(true)} />
+)
       )}
     </>
   );
