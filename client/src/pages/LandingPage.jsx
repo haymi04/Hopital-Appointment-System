@@ -1,56 +1,18 @@
 import React from "react";
 import "../styles/LandingPage.css";
-
 import hospitalimage from "../assets/hospitalimage.png";
 
-function LandingPage({ onLoginClick }) {
+function LandingPage( ) {
   return (
     <div className="landing-page">
-
-      {/* Navbar */}
-      <nav className="navbar">
-
-        <div className="logo">
-          <div className="logo-icon">
-            +
-          </div>
-
-          <div>
-            <h2>CarePlus</h2>
-            <span>HOSPITAL</span>
-          </div>
-        </div>
-
-
-        <div className="nav-links">
-          <a href="/">Home</a>
-          <a href="#about">About</a>
-          <a href="/doctors">Doctors</a>
-          <a href="/appointments">Appointments</a>
-          <a href="#contact">Contact</a>
-        </div>
-
-
-        <div className="nav-buttons">
-         <button onClick={onLoginClick}>
-             Login
-        </button>
-          <button className="register-btn">
-            Register
-          </button>
-        </div>
-
-      </nav>
-
-
-
+      
       {/* Hero Section */}
 
       <section className="hero">
 
 
         <div className="hero-content">
-
+        <style>backgroundimg </style>
           <h1>
             Your Health,
             <br/>
@@ -141,13 +103,13 @@ function LandingPage({ onLoginClick }) {
 
 
         <Stat 
-          number="50+"
+          number="30+"
           title="Doctors"
         />
 
 
         <Stat
-          number="20+"
+          number="5+"
           title="Departments"
         />
 
@@ -165,7 +127,6 @@ function LandingPage({ onLoginClick }) {
 
 
       </section>
-
 
     </div>
   );
@@ -221,7 +182,7 @@ function Stat({number,title}){
       <p>
         {title}
       </p>
-
+    
     </div>
 
   )
