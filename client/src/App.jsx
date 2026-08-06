@@ -1,5 +1,7 @@
+// client/src/App.jsx
 import React, { useState, useEffect } from 'react';
 import AuthPage from './components/AuthPage';
+import DoctorList from './components/DoctorList';
 import './App.css';
 
 function App() {
@@ -62,36 +64,49 @@ function App() {
   return (
     <>
       {user ? (
-        /* Protected Dashboard View (Placeholding for the next steps) */
+        /* Authenticated Dashboard View */
         <div style={{
           minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
           backgroundColor: '#0b0f19',
           color: '#f3f4f6',
-          padding: '20px',
-          textAlign: 'center'
+          padding: '24px'
         }}>
-          <h1 style={{ marginBottom: '10px' }}>Hospital Appointment System</h1>
-          <p style={{ color: '#9ca3af', marginBottom: '20px' }}>
-            Welcome back, <strong>{user.first_name} {user.last_name}</strong>! You are logged in as a <strong>{user.role}</strong>.
-          </p>
-          <button 
-            onClick={handleLogout}
-            style={{
-              background: '#ef4444',
-              color: 'white',
-              border: 'none',
-              padding: '10px 20px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: '600'
-            }}
-          >
-            Logout
-          </button>
+          {/* Top Header Navigation */}
+          <header style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            maxWidth: '1200px',
+            margin: '0 auto 24px auto',
+            paddingBottom: '16px',
+            borderBottom: '1px solid #1f2937'
+          }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '20px', color: '#ffffff' }}>Hospital Appointment System</h2>
+              <p style={{ margin: '4px 0 0 0', color: '#9ca3af', fontSize: '14px' }}>
+                Welcome, <strong>{user.first_name} {user.last_name}</strong> ({user.role})
+              </p>
+            </div>
+            <button 
+              onClick={handleLogout}
+              style={{
+                background: '#ef4444',
+                color: 'white',
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: '600'
+              }}
+            >
+              Logout
+            </button>
+          </header>
+
+          {/* Main Dashboard Content */}
+          <main style={{ maxWidth: '1200px', margin: '0 auto' }}>
+            <DoctorList />
+          </main>
         </div>
       ) : (
         /* Register/Login screen */
