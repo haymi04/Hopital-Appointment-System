@@ -50,26 +50,18 @@ CREATE TABLE patients (
         REFERENCES users(id)
         ON DELETE CASCADE
 );
-
 CREATE TABLE doctors (
     id SERIAL PRIMARY KEY,
-
     user_id INT UNIQUE NOT NULL,
-
-    department_id INT NOT NULL,
-
+    department_id INT, -- Removed NOT NULL so ON DELETE SET NULL works
     specialization VARCHAR(255),
-
     experience_years INT,
-
     biography TEXT,
-
 
     CONSTRAINT fk_doctor_user
         FOREIGN KEY(user_id)
         REFERENCES users(id)
         ON DELETE CASCADE,
-
 
     CONSTRAINT fk_doctor_department
         FOREIGN KEY(department_id)
