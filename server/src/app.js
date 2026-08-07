@@ -2,14 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const pool = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
-
+const appointmentRoutes = require("./routes/appointmentRoutes");//import appointment routes
 const app = express();
 
 
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
-
+app.use("/appointments", appointmentRoutes);//connect appointment routes
+console.log("Appointment routes loaded");
 
 app.get("/", (req, res) => {
     res.send("Hospital API is running");
