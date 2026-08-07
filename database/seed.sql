@@ -47,3 +47,14 @@ INSERT INTO doctor_availability (doctor_id, day_of_week, start_time, end_time) V
   ((SELECT d.id FROM doctors d JOIN users u ON d.user_id = u.id WHERE u.email = 'dr.alemu@medcare.com'), 'Thursday', '09:00', '13:00'),
   ((SELECT d.id FROM doctors d JOIN users u ON d.user_id = u.id WHERE u.email = 'dr.chen@medcare.com'), 'Monday', '10:00', '16:00');
   
+INSERT INTO users (email, password_hash, role, first_name, last_name, phone, gender, date_of_birth)
+VALUES (
+    'admin@hospital.com',
+    '$2b$10$EhPRDgWBVuP.m4gcMzeWpeuOrZvGnyhivXgMFUMEj1I0Xoqxl4Pc2', -- Verified hash of 'admin123'
+    'ADMIN',
+    'System',
+    'Admin',
+    '+251 911 223 344',
+    'Male',
+    '1990-01-01'
+);
