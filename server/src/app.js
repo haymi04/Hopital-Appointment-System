@@ -7,13 +7,10 @@ const pool = require("./config/database");
 
 // Import routes
 const authRoutes = require("./routes/authRoutes");
-<<<<<<< HEAD
 const doctorRoutes = require("./routes/doctorRoutes");
 const availabilityRoutes = require("./routes/availabilityRoutes");
 
-=======
 const appointmentRoutes = require("./routes/appointmentRoutes");//import appointment routes
->>>>>>> origin/main
 const app = express();
 
 // Middleware

@@ -1,10 +1,8 @@
-<<<<<<< HEAD
 // client/src/App.jsx
 import React, { useState, useEffect } from 'react';
 import AuthPage from './components/AuthPage';
 import DoctorList from './components/DoctorList';
 import './App.css';
-=======
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
@@ -22,7 +20,6 @@ import Register from "./pages/Register";
 
 // Dashboard sub-page (only loading PatientDashboard)
 import PatientDashboard from "./pages/PatientDashboard";
->>>>>>> origin/main
 
 function App() {
   const [user, setUser] = useState(null);
