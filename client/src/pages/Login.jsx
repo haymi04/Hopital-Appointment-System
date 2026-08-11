@@ -43,11 +43,16 @@ const Login = ({ onAuthSuccess }) => {
       setMessage("Login successful!");
       setIsError(false);
 
-    
-     if (onAuthSuccess) {
-       onAuthSuccess(data.user); // Saves the user data in App.jsx state
-    }
-      navigate("/patient/dashboard"); // Immediately redirects the browser to the dashboard URL
+      if (onAuthSuccess) {
+        onAuthSuccess(data.user); // Saves the user data in App.jsx state
+      }
+
+      // Dynamic redirect based on user role
+      if (data.user?.role === "ADMIN") {
+        navigate("/admin/doctors");
+      } else {
+        navigate("/patient/dashboard");
+      }
     } catch (error) {
       setMessage(error.message);
       setIsError(true);
@@ -65,7 +70,10 @@ const Login = ({ onAuthSuccess }) => {
         </div>
 
         {message && (
-          <div className={`alert-message ${isError ? "error" : "success"}`} style={{ marginBottom: "20px" }}>
+          <div
+            className={`alert-message ${isError ? "error" : "success"}`}
+            style={{ marginBottom: "20px" }}
+          >
             {message}
           </div>
         )}
@@ -105,7 +113,14 @@ const Login = ({ onAuthSuccess }) => {
         <div style={{ textAlign: "center", marginTop: "24px" }}>
           <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>
             Don't have an account?{" "}
-            <Link to="/register" style={{ color: "var(--primary-color)", textDecoration: "none", fontWeight: "600" }}>
+            <Link
+              to="/register"
+              style={{
+                color: "var(--primary-color)",
+                textDecoration: "none",
+                fontWeight: "600",
+              }}
+            >
               Register here
             </Link>
           </p>
