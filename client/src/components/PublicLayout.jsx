@@ -2,10 +2,10 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { Outlet } from "react-router-dom";
 
-function PublicLayout() {
+function PublicLayout({ user, onLogout }) {
   return (
     <>
-      <Navbar />
+      <Navbar user={user} onLogout={onLogout} />
 
       <Outlet />
 

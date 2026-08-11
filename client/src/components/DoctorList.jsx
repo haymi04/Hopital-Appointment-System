@@ -1,10 +1,11 @@
-// client/src/components/DoctorList.jsx
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getDoctors, deleteDoctor } from '../services/doctorService';
 import AddDoctorModal from './AddDoctorModal';
 import DoctorScheduleModal from './DoctorScheduleModal';
 
-const DoctorList = () => {
+const DoctorList = ({ user }) => {
+  const navigate = useNavigate();
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -33,7 +34,7 @@ const DoctorList = () => {
     fetchDoctors();
   }, []);
 
-  // Handle Doctor Deletion
+  // Handle Doctor Deletion (Admin only)
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this doctor?')) {
       try {
@@ -43,6 +44,15 @@ const DoctorList = () => {
         alert('Failed to delete doctor');
         console.error(err);
       }
+    }
+  };
+
+  // Handle Appointment Booking
+  const handleBook = (doctorId) => {
+    if (!user) {
+      navigate('/login');
+    } else {
+      navigate('/patient/dashboard');
     }
   };
 
@@ -59,24 +69,34 @@ const DoctorList = () => {
       {/* Top Header Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div>
-          <h1 style={{ margin: 0, fontSize: '24px', color: '#f8fafc' }}>Doctor Management</h1>
-          <p style={{ margin: '4px 0 0', color: '#94a3b8', fontSize: '14px' }}>Manage hospital doctors and availability schedules</p>
+          <h1 style={{ margin: 0, fontSize: '24px', color: '#f8fafc' }}>
+            {user && user.role === 'ADMIN' ? 'Doctor Management' : 'Our Doctors'}
+          </h1>
+          <p style={{ margin: '4px 0 0', color: '#94a3b8', fontSize: '14px' }}>
+            {user && user.role === 'ADMIN'
+              ? 'Manage hospital doctors and availability schedules'
+              : 'Find experienced specialists and book your appointment'}
+          </p>
         </div>
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          style={{
-            backgroundColor: '#0284c7',
-            color: '#ffffff',
-            border: 'none',
-            padding: '10px 18px',
-            borderRadius: '6px',
-            fontSize: '14px',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}
-        >
-          + Add Doctor
-        </button>
+
+        {/* Only show + Add Doctor to ADMIN users */}
+        {user && user.role === 'ADMIN' && (
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            style={{
+              backgroundColor: '#0284c7',
+              color: '#ffffff',
+              border: 'none',
+              padding: '10px 18px',
+              borderRadius: '6px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer'
+            }}
+          >
+            + Add Doctor
+          </button>
+        )}
       </div>
 
       {/* Doctor Cards Grid */}
@@ -142,57 +162,86 @@ const DoctorList = () => {
 
               {/* Card Action Buttons */}
               <div style={{ marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #334155', display: 'flex', gap: '8px' }}>
-                <button
-                  onClick={() => setSelectedDoctorForSchedule(doctor)}
-                  style={{
-                    backgroundColor: '#0284c7',
-                    color: '#ffffff',
-                    border: 'none',
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    flex: 1
-                  }}
-                >
-                  Schedule
-                </button>
-                <button
-                  onClick={() => handleDelete(doctor.doctor_id)}
-                  style={{
-                    backgroundColor: '#ef4444',
-                    color: '#ffffff',
-                    border: 'none',
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    flex: 1
-                  }}
-                >
-                  Delete
-                </button>
+                {/* ADMIN view: Schedule and Delete */}
+                {user && user.role === 'ADMIN' && (
+                  <>
+                    <button
+                      onClick={() => setSelectedDoctorForSchedule(doctor)}
+                      style={{
+                        backgroundColor: '#0284c7',
+                        color: '#ffffff',
+                        border: 'none',
+                        padding: '8px 12px',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        flex: 1
+                      }}
+                    >
+                      Schedule
+                    </button>
+                    <button
+                      onClick={() => handleDelete(doctor.doctor_id)}
+                      style={{
+                        backgroundColor: '#ef4444',
+                        color: '#ffffff',
+                        border: 'none',
+                        padding: '8px 12px',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        flex: 1
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
+
+                {/* Guest / PATIENT view: Book Appointment */}
+                {(!user || user.role === 'PATIENT') && (
+                  <button
+                    onClick={() => handleBook(doctor.doctor_id)}
+                    style={{
+                      backgroundColor: '#0284c7',
+                      color: '#ffffff',
+                      border: 'none',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      flex: 1
+                    }}
+                  >
+                    Book Appointment
+                  </button>
+                )}
               </div>
             </div>
           ))
         )}
       </div>
 
-      {/* Modal 1: Add New Doctor */}
-      <AddDoctorModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onDoctorAdded={fetchDoctors}
-      />
+      {/* Modal 1: Add New Doctor (Only triggered by ADMINs) */}
+      {user && user.role === 'ADMIN' && (
+        <AddDoctorModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          onDoctorAdded={fetchDoctors}
+        />
+      )}
 
-      {/* Modal 2: Manage Doctor Availability Schedule */}
-      <DoctorScheduleModal
-        isOpen={!!selectedDoctorForSchedule}
-        onClose={() => setSelectedDoctorForSchedule(null)}
-        doctor={selectedDoctorForSchedule}
-      />
+      {/* Modal 2: Manage Doctor Availability Schedule (Only triggered by ADMINs) */}
+      {user && user.role === 'ADMIN' && (
+        <DoctorScheduleModal
+          isOpen={!!selectedDoctorForSchedule}
+          onClose={() => setSelectedDoctorForSchedule(null)}
+          doctor={selectedDoctorForSchedule}
+        />
+      )}
     </div>
   );
 };

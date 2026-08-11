@@ -1,18 +1,12 @@
-// server/src/routes/doctorRoutes.js
-const express = require('express');
+// server/routes/doctorRoutes.js
+const express = require("express");
 const router = express.Router();
-const {
-  getAllDoctors,
-  getDoctorById,
-  createDoctor,
-  updateDoctor,
-  deleteDoctor,
-} = require('../controllers/doctorController');
+const doctorController = require("../controllers/doctorController");
 
-router.get('/', getAllDoctors);
-router.get('/:id', getDoctorById);
-router.post('/', createDoctor);
-router.put('/:id', updateDoctor);
-router.delete('/:id', deleteDoctor);
+// Public or Protected routes depending on your auth middleware
+router.get("/", doctorController.getAllDoctors);
+router.post("/", doctorController.addDoctor);
+router.put("/:id", doctorController.updateDoctor);
+router.delete("/:id", doctorController.deleteDoctor);
 
 module.exports = router;

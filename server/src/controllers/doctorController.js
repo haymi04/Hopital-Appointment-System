@@ -1,9 +1,8 @@
-// server/src/controllers/doctorController.js
-const pool = require('../config/database');
-const bcrypt = require('bcryptjs');
+// server/controllers/doctorController.js
+const db = require("../config/database"); // Your PostgreSQL pool/db connection
 
-// 1. GET /api/doctors - Fetch all doctors
-const getAllDoctors = async (req, res) => {
+// 1. GET ALL DOCTORS
+exports.getAllDoctors = async (req, res) => {
   try {
     const query = `
       SELECT 
@@ -13,211 +12,139 @@ const getAllDoctors = async (req, res) => {
         u.last_name,
         u.email,
         u.phone,
-        u.gender,
-        dept.name AS department_name,
-        d.department_id,
+        dep.id AS department_id,
+        dep.name AS department_name,
         d.specialization,
         d.experience_years,
         d.biography
       FROM doctors d
       JOIN users u ON d.user_id = u.id
-      LEFT JOIN departments dept ON d.department_id = dept.id
+      LEFT JOIN departments dep ON d.department_id = dep.id
       ORDER BY d.id DESC;
     `;
-
-    const { rows } = await pool.query(query);
-    res.status(200).json({ success: true, count: rows.length, data: rows });
+    const { rows } = await db.query(query);
+    res.status(200).json(rows);
   } catch (error) {
-    console.error('Error fetching doctors:', error);
-    res.status(500).json({ success: false, message: 'Server Error' });
+    console.error("Error fetching doctors:", error);
+    res.status(500).json({ message: "Server error fetching doctors" });
   }
 };
 
-// 2. GET /api/doctors/:id - Fetch a single doctor by ID
-const getDoctorById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const query = `
-      SELECT 
-        d.id AS doctor_id,
-        u.id AS user_id,
-        u.first_name,
-        u.last_name,
-        u.email,
-        u.phone,
-        u.gender,
-        dept.name AS department_name,
-        d.department_id,
-        d.specialization,
-        d.experience_years,
-        d.biography
-      FROM doctors d
-      JOIN users u ON d.user_id = u.id
-      LEFT JOIN departments dept ON d.department_id = dept.id
-      WHERE d.id = $1;
-    `;
-
-    const { rows } = await pool.query(query, [id]);
-
-    if (rows.length === 0) {
-      return res.status(404).json({ success: false, message: 'Doctor not found' });
-    }
-
-    res.status(200).json({ success: true, data: rows[0] });
-  } catch (error) {
-    console.error('Error fetching doctor:', error);
-    res.status(500).json({ success: false, message: 'Server Error' });
-  }
-};
-
-// 3. POST /api/doctors - Create user & doctor record (Transaction)
-const createDoctor = async (req, res) => {
-  const client = await pool.connect();
-
+// 2. ADD A NEW DOCTOR
+exports.addDoctor = async (req, res) => {
+  const client = await db.connect();
   try {
     const {
-      email,
-      password,
       first_name,
       last_name,
+      email,
+      password_hash,
       phone,
-      gender,
       department_id,
       specialization,
       experience_years,
       biography,
     } = req.body;
 
-    const saltRounds = 10;
-    const password_hash = await bcrypt.hash(password, saltRounds);
+    await client.query("BEGIN");
 
-    await client.query('BEGIN');
-
-    // Insert into users table
-    const userInsertQuery = `
-      INSERT INTO users (email, password_hash, role, first_name, last_name, phone, gender)
-      VALUES ($1, $2, 'DOCTOR', $3, $4, $5, $6)
+    // Insert into USERS table with role 'DOCTOR'
+    const userQuery = `
+      INSERT INTO users (first_name, last_name, email, password_hash, phone, role)
+      VALUES ($1, $2, $3, $4, $5, 'DOCTOR')
       RETURNING id;
     `;
-    const userValues = [email, password_hash, first_name, last_name, phone, gender];
-    const userResult = await client.query(userInsertQuery, userValues);
-    const userId = userResult.rows[0].id;
+    const userRes = await client.query(userQuery, [
+      first_name,
+      last_name,
+      email,
+      password_hash,
+      phone,
+    ]);
+    const userId = userRes.rows[0].id;
 
-    // Insert into doctors table
-    const doctorInsertQuery = `
+    // Insert into DOCTORS table
+    const doctorQuery = `
       INSERT INTO doctors (user_id, department_id, specialization, experience_years, biography)
       VALUES ($1, $2, $3, $4, $5)
-      RETURNING id;
+      RETURNING *;
     `;
-    const doctorValues = [userId, department_id, specialization, experience_years, biography];
-    const doctorResult = await client.query(doctorInsertQuery, doctorValues);
-    const doctorId = doctorResult.rows[0].id;
-
-    await client.query('COMMIT');
-
-    res.status(201).json({
-      success: true,
-      message: 'Doctor created successfully',
-      data: { doctor_id: doctorId, user_id: userId },
-    });
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('Error creating doctor:', error);
-
-    if (error.code === '23505') {
-      return res.status(400).json({ success: false, message: 'Email already registered' });
-    }
-
-    res.status(500).json({ success: false, message: 'Server error during creation' });
-  } finally {
-    client.release();
-  }
-};
-
-// 4. PUT /api/doctors/:id - Update doctor profile info
-const updateDoctor = async (req, res) => {
-  const client = await pool.connect();
-
-  try {
-    const { id } = req.params;
-    const {
-      first_name,
-      last_name,
-      phone,
+    const doctorRes = await client.query(doctorQuery, [
+      userId,
       department_id,
       specialization,
       experience_years,
       biography,
-    } = req.body;
+    ]);
 
-    await client.query('BEGIN');
+    await client.query("COMMIT");
 
-    // Fetch matching user_id
-    const doctorRes = await client.query('SELECT user_id FROM doctors WHERE id = $1', [id]);
-    if (doctorRes.rows.length === 0) {
-      await client.query('ROLLBACK');
-      return res.status(404).json({ success: false, message: 'Doctor not found' });
-    }
-    const userId = doctorRes.rows[0].user_id;
-
-    // Update users table
-    await client.query(
-      `UPDATE users SET first_name = $1, last_name = $2, phone = $3, updated_at = NOW() WHERE id = $4`,
-      [first_name, last_name, phone, userId]
-    );
-
-    // Update doctors table
-    await client.query(
-      `UPDATE doctors SET department_id = $1, specialization = $2, experience_years = $3, biography = $4, updated_at = NOW() WHERE id = $5`,
-      [department_id, specialization, experience_years, biography, id]
-    );
-
-    await client.query('COMMIT');
-    res.status(200).json({ success: true, message: 'Doctor updated successfully' });
+    res.status(201).json({
+      message: "Doctor created successfully",
+      doctor: doctorRes.rows[0],
+    });
   } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('Error updating doctor:', error);
-    res.status(500).json({ success: false, message: 'Server Error' });
+    await client.query("ROLLBACK");
+    console.error("Error adding doctor:", error);
+    res.status(500).json({ message: error.message || "Failed to add doctor" });
   } finally {
     client.release();
   }
 };
 
-// 5. DELETE /api/doctors/:id - Remove doctor profile & user record
-const deleteDoctor = async (req, res) => {
-  const client = await pool.connect();
+// 3. UPDATE DOCTOR
+exports.updateDoctor = async (req, res) => {
+  const { id } = req.params; // doctor_id
+  const { department_id, specialization, experience_years, biography } = req.body;
 
   try {
-    const { id } = req.params;
+    const query = `
+      UPDATE doctors 
+      SET 
+        department_id = COALESCE($1, department_id),
+        specialization = COALESCE($2, specialization),
+        experience_years = COALESCE($3, experience_years),
+        biography = COALESCE($4, biography)
+      WHERE id = $5
+      RETURNING *;
+    `;
+    const { rows } = await db.query(query, [
+      department_id,
+      specialization,
+      experience_years,
+      biography,
+      id,
+    ]);
 
-    await client.query('BEGIN');
-
-    const doctorRes = await client.query('SELECT user_id FROM doctors WHERE id = $1', [id]);
-    if (doctorRes.rows.length === 0) {
-      await client.query('ROLLBACK');
-      return res.status(404).json({ success: false, message: 'Doctor not found' });
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Doctor not found" });
     }
-    const userId = doctorRes.rows[0].user_id;
 
-    // Delete doctor and user records
-    await client.query('DELETE FROM doctors WHERE id = $1', [id]);
-    await client.query('DELETE FROM users WHERE id = $1', [userId]);
-
-    await client.query('COMMIT');
-    res.status(200).json({ success: true, message: 'Doctor deleted successfully' });
+    res.status(200).json({ message: "Doctor updated successfully", doctor: rows[0] });
   } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('Error deleting doctor:', error);
-    res.status(500).json({ success: false, message: 'Server Error' });
-  } finally {
-    client.release();
+    console.error("Error updating doctor:", error);
+    res.status(500).json({ message: "Failed to update doctor" });
   }
 };
 
-module.exports = {
-  getAllDoctors,
-  getDoctorById,
-  createDoctor,
-  updateDoctor,
-  deleteDoctor,
+// 4. DELETE DOCTOR
+exports.deleteDoctor = async (req, res) => {
+  const { id } = req.params; // doctor_id
+
+  try {
+    const deleteQuery = `DELETE FROM doctors WHERE id = $1 RETURNING user_id;`;
+    const { rows } = await db.query(deleteQuery, [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Doctor record not found" });
+    }
+
+    // Optionally delete associated user record
+    await db.query(`DELETE FROM users WHERE id = $1;`, [rows[0].user_id]);
+
+    res.status(200).json({ message: "Doctor deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting doctor:", error);
+    res.status(500).json({ message: "Failed to delete doctor" });
+  }
 };
