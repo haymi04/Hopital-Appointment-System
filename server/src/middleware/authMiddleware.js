@@ -1,11 +1,11 @@
 const jwt = require("jsonwebtoken");
-const pool = require("../config/database");
+
 
 const protect = async (req, res, next) => {
     let token;
 
     try {
-        // Check Authorization header
+        // 1. Check if Authorization header exists and starts with "Bearer"
         if (
             req.headers.authorization &&
             req.headers.authorization.startsWith("Bearer")
@@ -19,35 +19,14 @@ const protect = async (req, res, next) => {
                 process.env.JWT_SECRET
             );
 
-            // Get user from database with role-specific IDs (LEFT JOINing patients and doctors)
-            const result = await pool.query(
-                `
-                SELECT 
-                    u.id, 
-                    u.email, 
-                    u.role, 
-                    u.first_name, 
-                    u.last_name,
-                    p.id AS patient_id,
-                    d.id AS doctor_id
-                FROM users u
-                LEFT JOIN patients p ON p.user_id = u.id
-                LEFT JOIN doctors d ON d.user_id = u.id
-                WHERE u.id = $1
-                `,
-                [decoded.id]
-            );
-
-            if (result.rows.length === 0) {
-                return res.status(401).json({
-                    message: "User not found"
-                });
-            }
-
-            // Attach user details (including patient_id / doctor_id) to the request object
-            req.user = result.rows[0];
-
-            // Continue to the next route handler
+             // 3. Attach the decoded payload (including patient_id / doctor_id) directly to req.user
+            req.user = {
+                id: decoded.id,
+                role: decoded.role,
+                patient_id: decoded.patient_id,
+                doctor_id: decoded.doctor_id
+            };
+            // Continue to the next route/controller handler
             next();
         } else {
             return res.status(401).json({
