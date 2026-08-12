@@ -15,6 +15,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import PatientDashboard from "./pages/PatientDashboard";
 
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -68,7 +69,6 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/doctors" element={<Doctors user={user} />} />
         <Route path="/departments" element={<Departments />} />
-      </Route>
 
       {/* AUTH ROUTES */}
       <Route
@@ -99,6 +99,7 @@ function App() {
           )
         }
       />
+         </Route> //Closed the public layout
 
       {/* 2. PATIENT ROUTES (Patient Sidebar) */}
       <Route
@@ -112,6 +113,9 @@ function App() {
         }
       >
         <Route path="dashboard" element={<PatientDashboard user={user} />} />
+         <Route path="book" element={<div>Book Appointment Page</div>} />
+        <Route path="history" element={<div>Appointment History Page</div>} />
+        <Route path="doctors" element={<Doctors user={user} />} />
       </Route>
 
       {/* 3. ADMIN ROUTES (Admin Sidebar - Kal's Doctor Management) */}
@@ -125,7 +129,26 @@ function App() {
           )
         }
       >
-        <Route path="doctors" element={<Doctors user={user} />} />
+       <Route
+    path="dashboard"
+    element={
+      <div>
+        <h2>Admin Dashboard</h2>
+        <p>Welcome to the admin dashboard.</p>
+      </div>
+    }
+  />
+
+      <Route
+        path="doctors"
+        element={<Doctors user={user} />}
+      />
+
+    <Route
+      path="departments"
+      element={<Departments />}
+    />
+
       </Route>
 
       {/* FALLBACK */}
