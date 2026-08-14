@@ -106,7 +106,7 @@ CREATE TABLE appointments (
 
     status VARCHAR(50) NOT NULL
         CHECK(status IN 
-        ('PENDING','APPROVED','REJECTED','COMPLETED','CANCELLED')),
+        ('APPROVED','COMPLETED','CANCELLED')),
 
 
     reason TEXT,
