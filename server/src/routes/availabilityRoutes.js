@@ -5,9 +5,11 @@ const {
   getDoctorAvailability,
   addAvailabilitySlot,
   deleteAvailabilitySlot,
+  getAvailableSlots,
 } = require('../controllers/availabilityController');
 
 router.get('/doctor/:doctorId', getDoctorAvailability);
+router.get('/doctor/:doctorId/slots', getAvailableSlots);
 router.post('/', addAvailabilitySlot);
 router.delete('/:id', deleteAvailabilitySlot);
 

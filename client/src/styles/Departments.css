@@ -1,0 +1,115 @@
+.departments-container {
+  padding: 1.5rem;
+}
+
+.departments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.btn-add-department {
+  background-color: #1d4ed8;
+  color: white;
+  border: none;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-add-department:hover {
+  background-color: #1e40af;
+}
+
+.department-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  max-width: 480px;
+}
+
+.department-form input,
+.department-form textarea {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.department-form button {
+  align-self: flex-start;
+  background-color: #16a34a;
+  color: white;
+  border: none;
+  padding: 0.55rem 1.1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.department-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.departments-status {
+  color: #64748b;
+}
+
+.departments-error {
+  color: #dc2626;
+}
+
+.departments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.department-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  background: white;
+}
+
+.department-card h3 {
+  margin: 0 0 0.5rem 0;
+  color: #1d4ed8;
+}
+
+.department-card p {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.department-card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.department-card-actions button {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  background: #e2e8f0;
+}
+
+.department-card-actions .btn-delete {
+  background: #fee2e2;
+  color: #b91c1c;
+}

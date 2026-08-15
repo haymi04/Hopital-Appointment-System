@@ -60,8 +60,103 @@ const deleteAvailabilitySlot = async (req, res) => {
   }
 };
 
+// 4. GET /api/availability/doctor/:doctorId/slots?date=YYYY-MM-DD
+//    Turns the doctor's recurring weekly availability into concrete,
+//    bookable time slots for one specific date, with already-booked
+//    appointment times removed.
+const getAvailableSlots = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    const { date, duration } = req.query; // duration = slot length in minutes, optional
+
+    if (!date) {
+      return res.status(400).json({ success: false, message: "Query param 'date' (YYYY-MM-DD) is required" });
+    }
+
+    const slotDuration = parseInt(duration, 10) || 30; // default 30-minute slots
+
+    // JS getUTCDay(): 0=Sunday..6=Saturday. Parsing as UTC avoids
+    // off-by-one-day bugs caused by local timezone shifting the date.
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const parsedDate = new Date(`${date}T00:00:00Z`);
+    if (isNaN(parsedDate.getTime())) {
+      return res.status(400).json({ success: false, message: "Invalid date format, expected YYYY-MM-DD" });
+    }
+    const dayOfWeek = dayNames[parsedDate.getUTCDay()];
+
+    // 1. Doctor's recurring availability block(s) for that weekday
+    const availabilityResult = await pool.query(
+      `SELECT start_time, end_time
+       FROM doctor_availability
+       WHERE doctor_id = $1 AND day_of_week = $2
+       ORDER BY start_time ASC`,
+      [doctorId, dayOfWeek]
+    );
+
+    if (availabilityResult.rows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        doctorId: Number(doctorId),
+        date,
+        dayOfWeek,
+        availableSlots: [],
+        message: "Doctor has no availability set for this day",
+      });
+    }
+
+    // 2. Generate every possible slot start time inside those blocks
+    const allSlots = [];
+    for (const block of availabilityResult.rows) {
+      let [h, m] = block.start_time.slice(0, 5).split(":").map(Number);
+      const [endH, endM] = block.end_time.slice(0, 5).split(":").map(Number);
+      const endTotalMin = endH * 60 + endM;
+
+      while (h * 60 + m + slotDuration <= endTotalMin) {
+        allSlots.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+        m += slotDuration;
+        h += Math.floor(m / 60);
+        m = m % 60;
+      }
+    }
+
+    // 3. Already-booked times for this doctor on this date.
+    //    Only PENDING/APPROVED hold the slot — CANCELLED/REJECTED free it up.
+    let bookedTimes = new Set();
+    try {
+      const bookedResult = await pool.query(
+        `SELECT appointment_time
+         FROM appointments
+         WHERE doctor_id = $1
+           AND appointment_date = $2
+           AND status IN ('PENDING', 'APPROVED')`,
+        [doctorId, date]
+      );
+      bookedTimes = new Set(bookedResult.rows.map((r) => r.appointment_time.slice(0, 5)));
+    } catch (err) {
+      // If the appointments table/columns aren't ready yet, don't crash —
+      // just show full availability so the frontend can still be built ahead.
+      console.warn("Could not check booked appointments (appointments table may not be ready yet):", err.message);
+    }
+
+    const availableSlots = allSlots.filter((slot) => !bookedTimes.has(slot));
+
+    res.status(200).json({
+      success: true,
+      doctorId: Number(doctorId),
+      date,
+      dayOfWeek,
+      slotDurationMinutes: slotDuration,
+      availableSlots,
+    });
+  } catch (error) {
+    console.error("Error computing available slots:", error);
+    res.status(500).json({ success: false, message: "Server error computing available slots" });
+  }
+};
+
 module.exports = {
   getDoctorAvailability,
   addAvailabilitySlot,
   deleteAvailabilitySlot,
+  getAvailableSlots,
 };

@@ -8,11 +8,11 @@ INSERT INTO departments (name) VALUES
   ('Orthopedics')
 ON CONFLICT DO NOTHING;
 
--- 2. Seed Users (Doctors)
+-- 2. Seed Users (Doctors) //password is doctor123
 INSERT INTO users (email, password_hash, role, first_name, last_name, phone, gender) VALUES
-  ('dr.johnson@medcare.com', '$2a$10$e8R45T/3R4.N/y3w71N.5eX2yqX1234567890abcdefghijklm', 'DOCTOR', 'Robert', 'Johnson', '+251911112233', 'Male'),
-  ('dr.alemu@medcare.com', '$2a$10$e8R45T/3R4.N/y3w71N.5eX2yqX1234567890abcdefghijklm', 'DOCTOR', 'Sara', 'Alemu', '+251922334455', 'Female'),
-  ('dr.chen@medcare.com', '$2a$10$e8R45T/3R4.N/y3w71N.5eX2yqX1234567890abcdefghijklm', 'DOCTOR', 'David', 'Chen', '+251933445566', 'Male')
+  ('dr.johnson@medcare.com', '$2b$10$R/YYwjaizEscHUdNJDcFeOhXP0yoZtQ1ylC54DIzoMiFlXq/GkDfC', 'DOCTOR', 'Robert', 'Johnson', '+251911112233', 'Male'),
+  ('dr.alemu@medcare.com', '$2b$10$R/YYwjaizEscHUdNJDcFeOhXP0yoZtQ1ylC54DIzoMiFlXq/GkDfC', 'DOCTOR', 'Sara', 'Alemu', '+251922334455', 'Female'),
+  ('dr.chen@medcare.com', '$2b$10$R/YYwjaizEscHUdNJDcFeOhXP0yoZtQ1ylC54DIzoMiFlXq/GkDfC', 'DOCTOR', 'David', 'Chen', '+251933445566', 'Male')
 ON CONFLICT (email) DO NOTHING;
 
 -- 3. Seed Doctor Profiles

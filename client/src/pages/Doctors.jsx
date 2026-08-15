@@ -49,15 +49,20 @@ function Doctors({ user }) {
     }
   };
 
-  const fetchDepartments = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/api/departments");
-      const data = await response.json();
-      if (response.ok) setDepartments(data);
-    } catch (err) {
-      console.error("Failed to load departments:", err);
+ const fetchDepartments = async () => {
+  try {
+    const response = await fetch("http://localhost:5000/api/departments");
+    const data = await response.json();
+
+    if (response.ok) {
+      setDepartments(data.data);
+    } else {
+      console.error("Failed to load departments:", data.message);
     }
-  };
+  } catch (err) {
+    console.error("Failed to load departments:", err);
+  }
+};
 
   // Handle Input Changes
   const handleInputChange = (e) => {

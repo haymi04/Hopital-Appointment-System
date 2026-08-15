@@ -9,6 +9,7 @@ const pool = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
 const doctorRoutes = require("./routes/doctorRoutes");
 const availabilityRoutes = require("./routes/availabilityRoutes");
+const departmentRoutes = require("./routes/departmentRoutes");
 
 const appointmentRoutes = require("./routes/appointmentRoutes");//import appointment routes
 const app = express();
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/availability", availabilityRoutes);
+app.use("/api/departments", departmentRoutes);
 
 // Health check route
 app.use("/appointments", appointmentRoutes);//connect appointment routes
