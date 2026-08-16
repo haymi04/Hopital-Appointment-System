@@ -1,0 +1,74 @@
+.booking-page {
+  max-width: 800px;
+}
+
+.booking-card {
+  background: white;
+  border: 1px solid #e5eaf1;
+  border-radius: 12px;
+  padding: 25px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.booking-card label {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.booking-card input,
+.booking-card select,
+.booking-card textarea {
+  padding: 13px;
+
+  border: 1px solid #d8dee8;
+  border-radius: 7px;
+
+  outline: none;
+}
+
+.booking-card input:focus,
+.booking-card select:focus,
+.booking-card textarea:focus {
+  border-color: #1769e0;
+}
+
+.booking-card textarea {
+  resize: vertical;
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.time {
+  padding: 12px;
+
+  border: 1px solid #d8dee8;
+  background: white;
+
+  border-radius: 7px;
+  color: #344054;
+}
+
+.time:hover,
+.time.selected {
+  background: #1769e0;
+  color: white;
+  border-color: #1769e0;
+}
+
+.confirm-btn {
+  margin-top: 20px;
+}
+
+
+@media (max-width: 800px) {
+  .time-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
