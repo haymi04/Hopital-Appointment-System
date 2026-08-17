@@ -1,0 +1,92 @@
+/* =========================
+   GLOBAL
+========================= */
+/*
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f8fc;
+  color: #172b4d;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+}
+
+.main {
+  flex: 1;
+  padding: 35px;
+  max-width: 1400px;
+}
+
+/* Common buttons */
+/*
+.primary-btn,
+.confirm-btn {
+  border: none;
+  background: #1769e0;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 7px;
+  font-weight: bold;
+}
+
+.primary-btn:hover,
+.confirm-btn:hover {
+  background: #0d55bd;
+}
+
+/* Common page title */
+/*
+.page-title {
+  margin-bottom: 25px;
+}
+
+.page-title h1 {
+  font-size: 28px;
+  margin-bottom: 7px;
+}
+
+.page-title p {
+  color: #7b8798;
+}
+*/
+/* Empty state */
+
+.empty {
+  text-align: center;
+  padding: 50px;
+  color: #7b8798;
+}
+
+.empty .primary-btn {
+  margin-top: 15px;
+}
+
+
+/* =========================
+   RESPONSIVE APP LAYOUT
+========================= */
+
+@media (max-width: 800px) {
+  .main {
+    padding: 20px;
+  }
+}

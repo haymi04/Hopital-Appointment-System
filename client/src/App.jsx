@@ -1,30 +1,48 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-
-import "./App.css";
+import axios from "axios";
 
 import PublicLayout from "./components/PublicLayout";
-import DashboardLayout from "./components/DashboardLayout";
 import AdminLayout from "./components/AdminLayout"; // Import the new AdminLayout
 import DoctorLayout from "./components/DoctorLayout"; // Import the new DoctorLayout
+import PatientLayout from "./components/PatientLayout";
+import "./App.css";
 
+//PUBLIC PAGES
 import LandingPage from "./pages/LandingPage";
 import About from "./pages/About";
 import Doctors from "./pages/Doctors";
 import Departments from "./pages/Departments";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import PatientDashboard from "./pages/PatientDashboard";
 
+//PATIENT PAGES
+import PatientDashboard from "./pages/Patient/PatientDashboard";
+import BookAppointment from "./pages/Patient/BookAppointment";
+import AppointmentHistory from "./pages/Patient/AppointmentHistory";
+import SearchDoctors from "./pages/Patient/SearchDoctors";
+import Profile from "./pages/Patient/Profile";
+
+//DOCTOR PAGES
 import DoctorDashboard from "./pages/Doctor/DoctorDashboard";
 import DoctorAppointments from "./pages/Doctor/DoctorAppointments";
 import DoctorAvailability from "./pages/Doctor/DoctorAvailability";
 import DoctorProfile from "./pages/Doctor/DoctorProfile";
 
+const API = "http://localhost:5000/api";
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Patient data
+  const [appointments, setAppointments] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+
+  const [doctor, setDoctor] = useState("");
+  const [date, setDate] = useState("");
+  const [appointmentTime, setAppointmentTime] = useState("");
+  const [reason, setReason] = useState("");
 
   useEffect(() => {
     const checkUserLoggedIn = async () => {
@@ -62,6 +80,111 @@ function App() {
     localStorage.removeItem("token");
     setUser(null);
   };
+  //Api functions appointments and doctors to be solved later from this point
+  const getAppointments = async () => {
+  try {
+    const response = await axios.get(
+      `${API}/appointments`
+    );
+
+    const data = Array.isArray(response.data)
+      ? response.data
+      : response.data.appointments || [];
+
+    setAppointments(data);
+  } catch (error) {
+    console.error(
+      "Error loading appointments:",
+      error
+    );
+  }
+};
+
+const getDoctors = async () => {
+  try {
+    const response = await axios.get(
+      `${API}/doctors`
+    );
+
+    setDoctors(response.data);
+  } catch (error) {
+    console.error(
+      "Error loading doctors:",
+      error
+    );
+  }
+};
+useEffect(() => {
+  if (user?.role === "PATIENT") {
+    getAppointments();
+    getDoctors();
+  }
+}, [user]);
+const bookAppointment = async (e) => {
+  e.preventDefault();
+
+  if (
+    !doctor ||
+    !date ||
+    !appointmentTime ||
+    !reason
+  ) {
+    alert(
+      "Please select doctor, date, time and enter a reason."
+    );
+    return;
+  }
+
+  try {
+    await axios.post(`${API}/appointments`, {
+      patient_id: user?.id,
+      doctor_id: Number(doctor),
+      created_by_user_id: user?.id,
+      appointment_date: date,
+      appointment_time: appointmentTime,
+      reason: reason,
+    });
+
+    alert("Appointment booked successfully!");
+
+    setDoctor("");
+    setDate("");
+    setAppointmentTime("");
+    setReason("");
+
+    await getAppointments();
+  } catch (error) {
+    console.error("Booking error:", error);
+
+    alert(
+      error.response?.data?.message ||
+        "Could not book appointment. Check the backend."
+    );
+  }
+};
+
+const cancelAppointment = async (id) => {
+  try {
+    await axios.put(
+      `${API}/appointments/${id}`,
+      {
+        status: "CANCELLED",
+      }
+    );
+
+    await getAppointments();
+  } catch (error) {
+    console.error(
+      "Cancel error:",
+      error
+    );
+
+    alert(
+      "Could not cancel appointment."
+    );
+  }
+};
+//till this point
 
   if (loading) {
     return <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#0b0f19", color: "#9ca3af" }}>Loading...</div>;
@@ -114,16 +237,65 @@ function App() {
         path="/patient"
         element={
           user && user.role === "PATIENT" ? (
-            <DashboardLayout user={user} onLogout={handleLogout} />
+            <PatientLayout user={user} onLogout={handleLogout} />
           ) : (
             <Navigate to="/login" replace />
           )
         }
       >
-        <Route path="dashboard" element={<PatientDashboard user={user} />} />
-         <Route path="book" element={<div>Book Appointment Page</div>} />
-        <Route path="history" element={<div>Appointment History Page</div>} />
-        <Route path="doctors" element={<Doctors user={user} />} />
+         <Route
+        path="dashboard"
+        element={
+          <PatientDashboard
+            appointments={appointments}
+            doctors={doctors}
+            cancelAppointment={cancelAppointment}
+          />
+        }
+      />
+         <Route
+    path="book"
+    element={
+      <BookAppointment
+        doctors={doctors}
+        doctor={doctor}
+        setDoctor={setDoctor}
+        date={date}
+        setDate={setDate}
+        appointmentTime={appointmentTime}
+        setAppointmentTime={setAppointmentTime}
+        reason={reason}
+        setReason={setReason}
+        bookAppointment={bookAppointment}
+      />
+    }
+  />
+        <Route
+    path="history"
+    element={
+      <AppointmentHistory
+        appointments={appointments}
+        doctors={doctors}
+        cancelAppointment={cancelAppointment}
+      />
+    }
+  />
+
+        <Route
+    path="doctors"
+    element={
+      <SearchDoctors
+        doctors={doctors}
+        setDoctor={setDoctor}
+      />
+    }
+  />
+       <Route
+    path="profile"
+    element={
+      <Profile user={user} />
+    }
+  />
       </Route>
 
 

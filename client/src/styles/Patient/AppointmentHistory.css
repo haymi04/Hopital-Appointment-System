@@ -1,0 +1,67 @@
+.history-card {
+  background: white;
+  border: 1px solid #e5eaf1;
+  border-radius: 12px;
+  padding: 25px;
+
+  overflow-x: auto;
+}
+
+.history-card table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-card th,
+.history-card td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.history-card th {
+  color: #667085;
+  font-size: 13px;
+}
+
+
+/* Status */
+
+.status {
+  padding: 5px 10px;
+  border-radius: 20px;
+
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status.approved {
+  background: #e0f7eb;
+  color: #087443;
+}
+
+.status.completed {
+  background: #e5edff;
+  color: #1769e0;
+}
+
+.status.cancelled {
+  background: #ffe5e5;
+  color: #c92a2a;
+}
+
+
+/* Cancel */
+
+.cancel-btn {
+  border: 1px solid #e05252;
+  background: white;
+  color: #d63c3c;
+
+  padding: 7px 12px;
+  border-radius: 6px;
+}
+
+.cancel-btn:hover {
+  background: #fff0f0;
+}
