@@ -7,7 +7,7 @@ function DoctorDashboard({ user }) {
       {/* Welcome Section */}
       <div className="dashboard-page-header">
         <div>
-          <h2>Welcome, Dr. {user?.last_name || "Doctor"} 👋</h2>
+          <h2>Welcome, Dr. {user?.first_name || "Doctor"} 👋</h2>
           <p>Here is an overview of your appointments and schedule.</p>
         </div>
       </div>

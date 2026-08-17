@@ -1,0 +1,39 @@
+.doctor-search {
+  margin-bottom: 25px;
+}
+
+.doctor-search input {
+  width: 100%;
+  max-width: 600px;
+
+  padding: 14px 16px;
+
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+
+  font-size: 15px;
+  outline: none;
+}
+
+.doctor-search input:focus {
+  border-color: #1769e0;
+}
+
+.doctors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+
+@media (max-width: 900px) {
+  .doctors-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .doctors-grid {
+    grid-template-columns: 1fr;
+  }
+}
