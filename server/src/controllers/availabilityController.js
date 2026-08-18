@@ -128,7 +128,7 @@ const getAvailableSlots = async (req, res) => {
          FROM appointments
          WHERE doctor_id = $1
            AND appointment_date = $2
-           AND status IN ('PENDING', 'APPROVED')`,
+           AND status IN ('APPROVED')`,
         [doctorId, date]
       );
       bookedTimes = new Set(bookedResult.rows.map((r) => r.appointment_time.slice(0, 5)));
