@@ -1,0 +1,11 @@
+{
+  "name": "hospital-booking-frontend-member4",
+  "version": "1.0.0",
+  "private": true,
+  "note": "These files are meant to be copied into your team's shared React app (e.g. src/components, src/services). This package.json is just a dependency reference.",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "axios": "^1.7.2"
+  }
+}
