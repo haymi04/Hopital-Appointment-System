@@ -25,7 +25,7 @@ app.use("/api/availability", availabilityRoutes);
 app.use("/api/departments", departmentRoutes);
 
 // Health check route
-app.use("/appointments", appointmentRoutes);//connect appointment routes
+app.use("/api/appointments", appointmentRoutes);//connect appointment routes
 console.log("Appointment routes loaded");
 
 app.get("/", (req, res) => {

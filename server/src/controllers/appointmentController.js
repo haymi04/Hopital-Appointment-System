@@ -27,7 +27,7 @@ exports.createAppointment = async (req, res) => {
         reason
       )
 
-      VALUES ($1,$2,$3,$4,$5,'PENDING',$6)
+      VALUES ($1,$2,$3,$4,$5,'APPROVED',$6)
 
       RETURNING *`,
 

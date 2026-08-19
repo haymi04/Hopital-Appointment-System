@@ -39,7 +39,7 @@ function BookAppointment({
           }
         );
 
-        setAvailableSlots(response.data.slots || []);
+        setAvailableSlots(response.data.availableSlots || []);
       } catch (error) {
         console.error(
           "Error loading available slots:",
@@ -126,19 +126,19 @@ function BookAppointment({
           {availableSlots.map((slot) => (
             <button
               type="button"
-              key={slot.appointment_time}
+              key={slot}
               className={
-                appointmentTime === slot.appointment_time
+                appointmentTime === slot
                   ? "time selected"
                   : "time"
               }
               onClick={() =>
                 setAppointmentTime(
-                  slot.appointment_time
+                  slot
                 )
               }
             >
-              {slot.appointment_time}
+              {slot}
             </button>
           ))}
         </div>
