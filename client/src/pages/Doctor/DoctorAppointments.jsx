@@ -84,12 +84,26 @@ const getLocalDate = () => {
   return `${year}-${month}-${day}`;
 };
 
+const getLocalDateFromAppointment = (dateString) => {
+  if (!dateString) return "";
+
+  const date = new Date(dateString);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
 const today = getLocalDate();
 const filteredAppointments = appointments.filter(
   (appointment) => {
 
     const appointmentDate =
-      appointment.appointment_date?.slice(0, 10);
+      getLocalDateFromAppointment(
+        appointment.appointment_date
+      );
 
     // ALL
     if (filter === "ALL") {
