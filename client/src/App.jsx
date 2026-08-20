@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
-
+import AdminDashboard from "./pages/Admin/AdminDashboard";
 import PublicLayout from "./components/PublicLayout";
 import AdminLayout from "./components/AdminLayout"; // Import the new AdminLayout
 import DoctorLayout from "./components/DoctorLayout"; // Import the new DoctorLayout
@@ -32,7 +32,10 @@ import DoctorProfile from "./pages/Doctor/DoctorProfile";
 const API = "http://localhost:5000/api";
 
 function App() {
-  const [user, setUser] = useState(null);
+   const [user, setUser] = useState(() => {
+  const savedUser = localStorage.getItem("user");
+  return savedUser ? JSON.parse(savedUser) : null;
+});
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   // Patient data
@@ -58,6 +61,7 @@ function App() {
           );
           const data = await response.json();
           if (response.ok) {
+            localStorage.setItem("user", JSON.stringify(data.user));
             setUser(data.user);
           } else {
             localStorage.removeItem("token");
@@ -73,11 +77,13 @@ function App() {
   }, []);
 
   const handleAuthSuccess = (userData) => {
+    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
   };
   //Api functions appointments and doctors to be solved later from this point
@@ -337,8 +343,11 @@ await axios.put(
           ) : (
             <Navigate to="/login" replace />
           )
+          
         }
+        
       >
+        <Route path="dashboard" element={<AdminDashboard />} />
        <Route
     path="dashboard"
     element={
