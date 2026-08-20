@@ -1,6 +1,11 @@
 import "../../styles/Patient/Profile.css";
 
-function Profile() {
+function Profile({ user }) {
+  
+  const initials =
+    `${user?.first_name?.[0] || ""}${user?.last_name?.[0] || ""}`
+      .toUpperCase();
+
   return (
     <section className="profile-page">
 
@@ -12,30 +17,40 @@ function Profile() {
       <div className="profile-card">
 
         <div className="profile-avatar">
-          LD
+          {initials || "P"}
         </div>
 
-        <h2>Patient Profile</h2>
+        <h2>
+          {user?.first_name || "Patient"}{" "}
+          {user?.last_name || ""}
+        </h2>
 
         <p className="profile-role">
-          PATIENT
+          {user?.role || "PATIENT"}
         </p>
 
         <div className="profile-info">
 
           <div className="info-item">
             <span>Name</span>
-            <strong>Patient Name</strong>
+            <strong>
+              {user?.first_name || ""}{" "}
+              {user?.last_name || ""}
+            </strong>
           </div>
 
           <div className="info-item">
             <span>Email</span>
-            <strong>patient@example.com</strong>
+            <strong>
+              {user?.email || "Not provided"}
+            </strong>
           </div>
 
           <div className="info-item">
             <span>Phone</span>
-            <strong>Not provided</strong>
+            <strong>
+              {user?.phone || "Not provided"}
+            </strong>
           </div>
 
         </div>

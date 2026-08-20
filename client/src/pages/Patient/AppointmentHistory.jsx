@@ -50,7 +50,7 @@ function AppointmentHistory({
                       ? `Dr. ${doctor.first_name} ${doctor.last_name}`
                       : `Doctor ${appointment.doctor_id}`}
                       </h4>
-                      {doctor.specialization || "" }//added || ""
+                      {doctor.specialization || "" }
                   </td>
 
                   {/* DATE */}

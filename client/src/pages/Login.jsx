@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation} from "react-router-dom";
 import "../styles/AuthPage.css";
 
 const Login = ({ onAuthSuccess }) => {
@@ -7,6 +7,7 @@ const Login = ({ onAuthSuccess }) => {
   const [message, setMessage] = useState(null);
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -48,11 +49,22 @@ const Login = ({ onAuthSuccess }) => {
       }
 
       // Dynamic redirect based on user role
+    
       if (data.user?.role === "ADMIN") {
-        navigate("/admin/doctors");
-      } else {
-        navigate("/patient/dashboard");
-      }
+            navigate("/admin/doctors");
+          } else if (data.user?.role === "DOCTOR") {
+            navigate("/doctor/dashboard");
+          } else {
+            const from = location.state?.from || "/patient/dashboard";
+            navigate(from, { replace: true });
+          }
+
+            if (from) {
+              navigate(from, { replace: true });
+            } else {
+              navigate("/patient/dashboard");
+            }
+      
     } catch (error) {
       setMessage(error.message);
       setIsError(true);

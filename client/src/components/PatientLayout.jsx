@@ -1,8 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar";
 
 import "../styles/Patient/PatientLayout.css";
+import Sidebar from "./Sidebar";
 
 function PatientLayout({ user, onLogout }) {
   return (

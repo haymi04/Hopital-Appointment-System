@@ -1,8 +1,12 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/LandingPage.css";
 import hospitalimage from "../assets/hospitalimage.png";
 
 function LandingPage( ) {
+
+const navigate = useNavigate();
+
   return (
     <div className="landing-page">
       
@@ -29,8 +33,11 @@ function LandingPage( ) {
 
           <div className="hero-buttons">
 
-            <button className="primary-btn">
-              Book Appointment
+            <button
+                className="primary-btn"
+                onClick={() => navigate("/patient/book")}
+              >
+                Book Appointment
             </button>
 
 
