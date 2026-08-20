@@ -32,7 +32,10 @@ import DoctorProfile from "./pages/Doctor/DoctorProfile";
 const API = "http://localhost:5000/api";
 
 function App() {
-  const [user, setUser] = useState(null);
+   const [user, setUser] = useState(() => {
+  const savedUser = localStorage.getItem("user");
+  return savedUser ? JSON.parse(savedUser) : null;
+});
   const [loading, setLoading] = useState(true);
   
   // Patient data
@@ -58,6 +61,7 @@ function App() {
           );
           const data = await response.json();
           if (response.ok) {
+            localStorage.setItem("user", JSON.stringify(data.user));
             setUser(data.user);
           } else {
             localStorage.removeItem("token");
@@ -73,11 +77,13 @@ function App() {
   }, []);
 
   const handleAuthSuccess = (userData) => {
+    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
   };
   //Api functions appointments and doctors to be solved later from this point
