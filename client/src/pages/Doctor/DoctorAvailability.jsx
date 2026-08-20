@@ -3,7 +3,11 @@ import axios from "axios";
 
 import "../../styles/Doctor/DoctorAvailability.css";
 
-const API = "http://localhost:5000/api";
+import {
+  getDoctorAvailability,
+  createAvailability,
+  deleteAvailability,
+} from "../../services/availabilityService";
 
 function DoctorAvailability({ user }) {
   const [availability, setAvailability] = useState([]);
@@ -28,23 +32,25 @@ function DoctorAvailability({ user }) {
   // =========================
 
   const getAvailability = async () => {
-    if (!user?.doctor_id) return;
+  if (!user?.doctor_id) return;
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const response = await axios.get(
-        `${API}/availability/doctor/${user.doctor_id}`
-      );
+    const data = await getDoctorAvailability(
+      user.doctor_id
+    );
 
-      setAvailability(response.data.data || []);
-    } catch (error) {
-      console.error("Error loading availability:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+    setAvailability(data);
+  } catch (error) {
+    console.error(
+      "Error loading availability:",
+      error
+    );
+  } finally {
+    setLoading(false);
+  }
+};
   useEffect(() => {
     getAvailability();
   }, [user]);
@@ -67,12 +73,12 @@ function DoctorAvailability({ user }) {
     }
 
     try {
-      await axios.post(`${API}/availability`, {
+      await createAvailability({
         doctor_id: user.doctor_id,
         day_of_week: dayOfWeek,
         start_time: startTime,
         end_time: endTime,
-      });
+});
 
       alert("Availability added successfully.");
 
@@ -103,7 +109,7 @@ function DoctorAvailability({ user }) {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`${API}/availability/${id}`);
+     await deleteAvailability(id);
 
       await getAvailability();
     } catch (error) {
@@ -112,6 +118,19 @@ function DoctorAvailability({ user }) {
       alert("Could not delete availability.");
     }
   };
+
+  //display the availability in a 12hr format with AM/PM
+  const formatTime = (time) => {
+  if (!time) return "—";
+
+  return new Date(
+    `1970-01-01T${time}`
+  ).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
 
   return (
     <div className="doctor-availability">
@@ -238,9 +257,9 @@ function DoctorAvailability({ user }) {
                 </div>
 
                 <div>
-                  {slot.start_time.slice(0, 5)}
+                  {formatTime(slot.start_time)}
                   {" - "}
-                  {slot.end_time.slice(0, 5)}
+                  {formatTime(slot.end_time)}
                 </div>
 
                 <button
