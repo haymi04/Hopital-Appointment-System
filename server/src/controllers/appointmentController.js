@@ -119,3 +119,54 @@ message:error.message
 }
 
 };
+
+// GET /appointments/doctor
+// Get appointments for the logged-in doctor
+exports.getDoctorAppointments = async (req, res) => {
+  try {
+    if (!req.user.doctor_id) {
+      return res.status(400).json({
+        message: "Doctor ID not found"
+      });
+    }
+
+    const result = await pool.query(
+      `SELECT
+        a.id,
+        a.patient_id,
+        a.doctor_id,
+        a.appointment_date,
+        a.appointment_time,
+        a.status,
+        a.reason,
+
+        u.first_name AS patient_first_name,
+        u.last_name AS patient_last_name,
+        u.phone AS patient_phone
+
+       FROM appointments a
+
+       JOIN patients p
+         ON a.patient_id = p.id
+
+       JOIN users u
+         ON p.user_id = u.id
+
+       WHERE a.doctor_id = $1
+
+       ORDER BY
+         a.appointment_date ASC,
+         a.appointment_time ASC`,
+      [req.user.doctor_id]
+    );
+
+    res.json(result.rows);
+
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};

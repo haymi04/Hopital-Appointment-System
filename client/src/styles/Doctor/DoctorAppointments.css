@@ -1,0 +1,261 @@
+/* ================================
+   DOCTOR APPOINTMENTS PAGE
+================================ */
+
+.doctor-appointments {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+
+/* ================================
+   PAGE HEADER
+================================ */
+
+.dashboard-page-header {
+  margin-bottom: 24px;
+}
+
+.dashboard-page-header h2 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.dashboard-page-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+
+/* ================================
+   FILTERS
+================================ */
+
+.appointment-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 9px 17px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #4b5563;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.filter-btn.active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+
+/* ================================
+   APPOINTMENT CARD
+================================ */
+
+.doctor-appointments-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+
+/* ================================
+   TABLE
+================================ */
+
+.appointments-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.appointments-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 850px;
+}
+
+.appointments-table th {
+  padding: 15px 18px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+
+  text-align: left;
+
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.appointments-table td {
+  padding: 17px 18px;
+  border-bottom: 1px solid #f1f5f9;
+
+  color: #4b5563;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.appointments-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.appointments-table tbody tr:hover {
+  background: #fafafa;
+}
+
+
+/* ================================
+   PATIENT
+================================ */
+
+.patient-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.patient-info strong {
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.patient-info span {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+
+/* ================================
+   STATUS
+================================ */
+
+.appointment-status {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 5px 10px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.appointment-status.approved {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.appointment-status.completed {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.appointment-status.cancelled {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+
+/* ================================
+   COMPLETE BUTTON
+================================ */
+
+.complete-btn {
+  padding: 8px 13px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #059669;
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.complete-btn:hover {
+  background: #047857;
+}
+
+.no-action {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+
+/* ================================
+   EMPTY / LOADING
+================================ */
+
+.appointment-message {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.appointment-empty-icon {
+  font-size: 34px;
+  margin-bottom: 12px;
+}
+
+.appointment-message h3 {
+  margin: 0 0 7px;
+  color: #374151;
+  font-size: 17px;
+}
+
+.appointment-message p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 700px) {
+
+  .dashboard-page-header h2 {
+    font-size: 24px;
+  }
+
+  .doctor-appointments-card {
+    border-radius: 10px;
+  }
+
+  .appointment-filters {
+    width: 100%;
+  }
+
+  .filter-btn {
+    flex: 1;
+  }
+}
