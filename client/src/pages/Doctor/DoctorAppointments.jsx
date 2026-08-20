@@ -3,7 +3,10 @@ import axios from "axios";
 
 import "../../styles/Doctor/DoctorAppointments.css";
 
-const API = "http://localhost:5000/api";
+import {
+  getDoctorAppointments,
+  updateAppointmentStatus,
+} from "../../services/doctorappService";
 
 function DoctorAppointments({ user }) {
   const [appointments, setAppointments] = useState([]);
@@ -15,28 +18,21 @@ function DoctorAppointments({ user }) {
   // =========================
 
   const getAppointments = async () => {
-    try {
-      setLoading(true);
+      try {
+        setLoading(true);
 
-      const response = await axios.get(
-        `${API}/appointments/doctor`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const data = await getDoctorAppointments();
 
-      setAppointments(response.data || []);
+      setAppointments(data || []);
 
-    } catch (error) {
-      console.error(
-        "Error loading doctor appointments:",
-        error
-      );
-    } finally {
-      setLoading(false);
-    }
+      } catch (error) {
+        console.error(
+          "Error loading doctor appointments:",
+          error
+        );
+      } finally {
+        setLoading(false);
+      }
   };
 
   useEffect(() => {
@@ -50,47 +46,33 @@ function DoctorAppointments({ user }) {
   // =========================
 
   const completeAppointment = async (id) => {
-    const confirmed = window.confirm(
-      "Mark this appointment as completed?"
+  const confirmed = window.confirm(
+    "Mark this appointment as completed?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await updateAppointmentStatus(id, "COMPLETED");
+
+    await getAppointments();
+
+  } catch (error) {
+    console.error(
+      "Error completing appointment:",
+      error
     );
 
-    if (!confirmed) return;
-
-    try {
-      await axios.put(
-        `${API}/appointments/${id}`,
-        {
-          status: "COMPLETED",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      await getAppointments();
-
-    } catch (error) {
-      console.error(
-        "Error completing appointment:",
-        error
-      );
-
-      alert(
-        error.response?.data?.message ||
-          "Could not complete appointment."
-      );
-    }
-  };
+    alert(
+      error.response?.data?.message ||
+        "Could not complete appointment."
+    );
+  }
+};
 
   // =========================
   // FILTER APPOINTMENTS
   // =========================
-
-  // =========================
-// FILTER APPOINTMENTS
-// =========================
 
 const getLocalDate = () => {
   const date = new Date();
@@ -103,9 +85,6 @@ const getLocalDate = () => {
 };
 
 const today = getLocalDate();
-console.log("Appointments:", appointments);
-console.log("Today:", today);
-
 const filteredAppointments = appointments.filter(
   (appointment) => {
 

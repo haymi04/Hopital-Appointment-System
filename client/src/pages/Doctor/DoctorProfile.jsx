@@ -1,4 +1,4 @@
-//import "../../styles/Patient/Profile.css";
+import "../../styles/Doctor/DoctorProfile.css";
 
 function Profile({ user }) {
   console.log("Logged in user:", user);
@@ -32,7 +32,7 @@ function Profile({ user }) {
           {getInitials()}
         </div>
 
-        <h2>{fullName || "DOCTOR"}</h2>
+        <h2>{fullName || "Doctor"}</h2>
 
         <p className="profile-role">
           {user?.role || "DOCTOR"}
