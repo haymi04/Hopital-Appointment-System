@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import axios from "axios";
-
+import AdminDashboard from "./pages/Admin/AdminDashboard";
 import PublicLayout from "./components/PublicLayout";
 import AdminLayout from "./components/AdminLayout"; // Import the new AdminLayout
 import DoctorLayout from "./components/DoctorLayout"; // Import the new DoctorLayout
@@ -308,8 +308,11 @@ const cancelAppointment = async (id) => {
           ) : (
             <Navigate to="/login" replace />
           )
+          
         }
+        
       >
+        <Route path="dashboard" element={<AdminDashboard />} />
        <Route
     path="dashboard"
     element={
