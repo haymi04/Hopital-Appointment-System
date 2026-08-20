@@ -6,13 +6,14 @@ exports.createAppointment = async (req, res) => {
   try {
 
     const {
-      patient_id,
-      doctor_id,
-      created_by_user_id,
-      appointment_date,
-      appointment_time,
-      reason
-    } = req.body;
+  doctor_id,
+  appointment_date,
+  appointment_time,
+  reason
+} = req.body;
+
+const patient_id = req.user.patient_id;
+const created_by_user_id = req.user.id;
 
 
     const result = await pool.query(
@@ -64,7 +65,12 @@ exports.getAppointments = async (req,res)=>{
  try{
 
  const result = await pool.query(
-   "SELECT * FROM appointments ORDER BY id"
+   `SELECT *
+    FROM appointments 
+    WHERE patient_id = $1 
+    ORDER BY appointment_date, appointment_time`,
+    [req.user.patient_id]
+
  );
 
 

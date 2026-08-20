@@ -2,6 +2,8 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 
 import "../styles/Patient/Sidebar.css";
+import "../styles/Patient/PatientLayout.css";
+
 import Sidebar from "./Sidebar";
 
 

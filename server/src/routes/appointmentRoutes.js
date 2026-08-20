@@ -7,12 +7,13 @@ const {
   updateAppointmentStatus
 } = require("../controllers/appointmentController");
 
+const { protect } = require("../middleware/authMiddleware");
 
-router.post("/", createAppointment);
+router.post("/", protect, createAppointment);
 
-router.get("/", getAppointments);
+router.get("/", protect, getAppointments);
 
-router.put("/:id", updateAppointmentStatus);
+router.put("/:id", protect, updateAppointmentStatus);
 
 
 module.exports = router;

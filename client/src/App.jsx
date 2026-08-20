@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 import PublicLayout from "./components/PublicLayout";
@@ -34,7 +34,7 @@ const API = "http://localhost:5000/api";
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+  const location = useLocation();
   // Patient data
   const [appointments, setAppointments] = useState([]);
   const [doctors, setDoctors] = useState([]);
@@ -81,10 +81,17 @@ function App() {
     setUser(null);
   };
   //Api functions appointments and doctors to be solved later from this point
-  const getAppointments = async () => {
+ const getAppointments = async () => {
   try {
+    const token = localStorage.getItem("token");
+
     const response = await axios.get(
-      `${API}/appointments`
+      `${API}/appointments`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
 
     const data = Array.isArray(response.data)
@@ -92,11 +99,9 @@ function App() {
       : response.data.appointments || [];
 
     setAppointments(data);
+
   } catch (error) {
-    console.error(
-      "Error loading appointments:",
-      error
-    );
+    console.error("Error loading appointments:", error);
   }
 };
 
@@ -123,6 +128,8 @@ useEffect(() => {
 const bookAppointment = async (e) => {
   e.preventDefault();
 
+console.log("Logged in user:", user);
+
   if (
     !doctor ||
     !date ||
@@ -136,14 +143,24 @@ const bookAppointment = async (e) => {
   }
 
   try {
-    await axios.post(`${API}/appointments`, {
-      patient_id: user?.id,
-      doctor_id: Number(doctor),
-      created_by_user_id: user?.id,
-      appointment_date: date,
-      appointment_time: appointmentTime,
-      reason: reason,
-    });
+   const token = localStorage.getItem("token");
+
+await axios.post(
+  `${API}/appointments`,
+  {
+    
+    doctor_id: Number(doctor),
+    
+    appointment_date: date,
+    appointment_time: appointmentTime,
+    reason: reason,
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
 
     alert("Appointment booked successfully!");
 
@@ -165,12 +182,19 @@ const bookAppointment = async (e) => {
 
 const cancelAppointment = async (id) => {
   try {
-    await axios.put(
-      `${API}/appointments/${id}`,
-      {
-        status: "CANCELLED",
-      }
-    );
+    const token = localStorage.getItem("token");
+
+await axios.put(
+  `${API}/appointments/${id}`,
+  {
+    status: "CANCELLED",
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
 
     await getAppointments();
   } catch (error) {
@@ -234,19 +258,24 @@ const cancelAppointment = async (id) => {
 
       {/* 2. PATIENT ROUTES (Patient Sidebar) */}
       <Route
-        path="/patient"
-        element={
-          user && user.role === "PATIENT" ? (
-            <PatientLayout user={user} onLogout={handleLogout} />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      >
+  path="/patient"
+  element={
+    user && user.role === "PATIENT" ? (
+      <PatientLayout user={user} onLogout={handleLogout} />
+    ) : (
+      <Navigate
+        to="/login"
+        state={{ from: "/patient/book" }}
+        replace
+      />
+    )
+  }
+>
          <Route
         path="dashboard"
         element={
           <PatientDashboard
+            user={user}
             appointments={appointments}
             doctors={doctors}
             cancelAppointment={cancelAppointment}
